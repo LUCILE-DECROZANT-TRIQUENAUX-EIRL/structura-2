@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+    {% if (app.user) %}
+        User logged in: <strong>{{ app.user.username }}</strong>
+        <br>
+        Roles:
+        <br>
+        {% for role in app.user.roles %}
+            {{ role }}<br>
+        {% endfor %}
+    {% else %}
+        No user logged in
+    {% endif %}
+    <br>
+    Navigation:
+    <br>
+    <a href="{{ url('app_logout') }}">Logout</a>
+    <br>
+    {% if is_granted('ROLE_ADMIN') %}
+        <a href="{{ url('admin_dashboard') }}">Administration panel</a>
+    {% endif %}
+{% endblock %}

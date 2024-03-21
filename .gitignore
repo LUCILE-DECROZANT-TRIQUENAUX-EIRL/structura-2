@@ -50,3 +50,9 @@
 
 # Embedded web-server pid file
 /.web-server-pid
+
+# local env variables
+.env.local
+
+# PHPStorm
+.idea
