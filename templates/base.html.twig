@@ -3,11 +3,13 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %} - Structura</title>
-        <link rel="icon" href="{{ asset('/favicon.webp') }}">
+        <link rel="icon" href="{{ asset('build/images/favicon.webp') }}">
         {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
         {% endblock %}
 
         {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
         {% endblock %}
     </head>
     <body>
