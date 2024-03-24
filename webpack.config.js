@@ -53,7 +53,7 @@ Encore
     })
 
     // enables Sass/SCSS support
-    //.enableSassLoader()
+    .enableSassLoader()
 
     // uncomment to get integrity="..." attributes on script & link tags
     // requires WebpackEncoreBundle 1.4 or higher
