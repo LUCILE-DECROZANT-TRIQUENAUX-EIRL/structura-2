@@ -3,23 +3,91 @@
 {% block title %}Accueil{% endblock %}
 
 {% block body %}
-    {% if (app.user) %}
-        User logged in: <strong>{{ app.user.username }}</strong>
-        <br>
-        Roles:
-        <br>
-        {% for role in app.user.roles %}
-            {{ role }}<br>
-        {% endfor %}
-    {% else %}
-        No user logged in
-    {% endif %}
-    <br>
-    Navigation:
-    <br>
-    <a href="{{ url('app_logout') }}" class="btn btn-secondary" data-bs-toggle="tooltip" title="tooltip">Logout</a>
-    <br>
-    {% if is_granted('ROLE_ADMIN') %}
-        <a href="{{ url('admin_dashboard') }}">Administration panel</a>
-    {% endif %}
+    <section class="section dashboard">
+        <div class="row">
+            {# Left column #}
+            <div class="col-lg-8">
+                <div class="row">
+                    {# First card #}
+                    <div class="col-xxl-4 col-md-6">
+                        <div class="card info-card first-card">
+                            <div class="card-body">
+                                <h5 class="card-title">Placeholder card <span>| Subtitle</span></h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="ri-image-circle-fill"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6>145</h6>
+                                        <span class="text-success small pt-1 fw-bold">12%</span>
+                                        <span class="text-muted small pt-2 ps-1">increase</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Second card #}
+                    <div class="col-xxl-4 col-md-6">
+                        <div class="card info-card second-card">
+                            <div class="card-body">
+                                <h5 class="card-title">Placeholder card <span>| Subtitle</span></h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="ri-money-euro-circle-fill"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6>$3,264</h6>
+                                        <span class="text-success small pt-1 fw-bold">8%</span>
+                                        <span class="text-muted small pt-2 ps-1">increase</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Third card #}
+                    <div class="col-xxl-4 col-xl-12">
+                        <div class="card info-card third-card">
+                            <div class="card-body">
+                                <h5 class="card-title">Placeholder card <span>| Subtitle</span></h5>
+                                <div class="d-flex align-items-center">
+                                    <div class="card-icon rounded-circle d-flex align-items-center justify-content-center">
+                                        <i class="ri-group-2-fill"></i>
+                                    </div>
+                                    <div class="ps-3">
+                                        <h6>1244</h6>
+                                        <span class="text-danger small pt-1 fw-bold">12%</span>
+                                        <span class="text-muted small pt-2 ps-1">decrease</span>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Fourth card #}
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">Placeholder card <span>| Subtitle</span></h5>
+                                <div class="text-muted fst-italic">More content to come...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Right column #}
+            <div class="col-lg-4">
+                {# First card #}
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">Placeholder card <span>| Subtitle</span></h5>
+                        <div class="text-muted fst-italic">More content to come...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 {% endblock %}

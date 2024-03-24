@@ -1,1 +1,10 @@
 @import "~bootstrap/scss/bootstrap";
+@import "~remixicon/fonts/remixicon.css";
+@import "./NiceAdmin/style"; // NiceAdmin theme
+@import url('https://fonts.cdnfonts.com/css/nunito'); // NiceAdmin font
+@import url('https://fonts.cdnfonts.com/css/open-sans'); // NiceAdmin font
+@import url('https://fonts.cdnfonts.com/css/poppins'); // NiceAdmin font
+
+#full-height-page-body {
+    min-height: 50rem;
+}

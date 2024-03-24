@@ -2,7 +2,7 @@
 <html lang="fr">
     <head>
         <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %} - Structura</title>
+        <title>{% block title %}Accueil{% endblock %} - Structura</title>
         <link rel="icon" href="{{ asset('build/images/favicon.webp') }}">
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
@@ -13,6 +13,220 @@
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
-    </body>
+    {# Top bar #}
+    <header id="header" class="header fixed-top d-flex align-items-center">
+        <div class="d-flex align-items-center justify-content-between">
+            <a href="/" class="logo d-flex align-items-center">
+                <img src="{{ asset('build/images/favicon.webp') }}" alt="">
+                <span class="d-none d-lg-block">Structura</span>
+            </a>
+            <i class="ri-menu-fill toggle-sidebar-btn"></i>
+        </div>
+
+        {# Search bar #}
+    {#    <div class="search-bar">#}
+    {#        <form class="search-form d-flex align-items-center" method="POST" action="#">#}
+    {#            <input type="text" name="query" placeholder="Search" title="Enter search keyword">#}
+    {#            <button type="submit" title="Search"><i class="ri-search-line"></i></button>#}
+    {#        </form>#}
+    {#    </div>#}
+
+        <nav class="header-nav ms-auto">
+            <ul class="d-flex align-items-center">
+
+                {# Search bar toggle button (for mobile view) #}
+    {#            <li class="nav-item d-block d-lg-none">#}
+    {#                <a class="nav-link nav-icon search-bar-toggle " href="#">#}
+    {#                    <i class="ri-search-line"></i>#}
+    {#                </a>#}
+    {#            </li>#}
+
+                {# Notifications #}
+{#                <li class="nav-item dropdown">#}
+{#                    <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">#}
+{#                        <i class="ri-notification-2-line"></i>#}
+{#                        <span class="badge bg-primary badge-number">2</span>#}
+{#                    </a>#}
+{#                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications">#}
+{#                        <li class="dropdown-header">#}
+{#                            You have 2 new notifications#}
+{#                        </li>#}
+{#                        <li><hr class="dropdown-divider"></li>#}
+{#                        <li class="notification-item">#}
+{#                            <i class="ri-error-warning-line text-warning"></i>#}
+{#                            <div>#}
+{#                                <h4>Lorem Ipsum</h4>#}
+{#                                <p>Quae dolorem earum veritatis oditseno</p>#}
+{#                                <p>30 min. ago</p>#}
+{#                            </div>#}
+{#                        </li>#}
+{#                        <li><hr class="dropdown-divider"></li>#}
+{#                        <li class="notification-item">#}
+{#                            <i class="ri-close-circle-line text-danger"></i>#}
+{#                            <div>#}
+{#                                <h4>Atque rerum nesciunt</h4>#}
+{#                                <p>Quae dolorem earum veritatis oditseno</p>#}
+{#                                <p>1 hr. ago</p>#}
+{#                            </div>#}
+{#                        </li>#}
+{#                        <li><hr class="dropdown-divider"></li>#}
+{#                        <li class="dropdown-footer">#}
+{#                            <a href="#">Show all notifications</a>#}
+{#                        </li>#}
+{#                    </ul>#}
+{#                </li>#}
+
+                {# Messages #}
+    {#            <li class="nav-item dropdown">#}
+    {#                <a class="nav-link nav-icon" href="#" data-bs-toggle="dropdown">#}
+    {#                    <i class="ri-chat-3-line"></i>#}
+    {#                    <span class="badge bg-success badge-number">2</span>#}
+    {#                </a>#}
+
+    {#                <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow messages">#}
+    {#                    <li class="dropdown-header">#}
+    {#                        You have 2 new messages#}
+    {#                    </li>#}
+    {#                    <li><hr class="dropdown-divider"></li>#}
+    {#                    <li class="message-item">#}
+    {#                        <a href="#">#}
+    {#                            <img src="assets/img/avatar-1.jpg" alt="" class="rounded-circle">#}
+    {#                            <div>#}
+    {#                                <h4>Maria Hudson</h4>#}
+    {#                                <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>#}
+    {#                                <p>4 hrs. ago</p>#}
+    {#                            </div>#}
+    {#                        </a>#}
+    {#                    </li>#}
+    {#                    <li><hr class="dropdown-divider"></li>#}
+    {#                    <li class="message-item">#}
+    {#                        <a href="#">#}
+    {#                            <img src="assets/img/avatar-2.jpg" alt="" class="rounded-circle">#}
+    {#                            <div>#}
+    {#                                <h4>Anna Nelson</h4>#}
+    {#                                <p>Velit asperiores et ducimus soluta repudiandae labore officia est ut...</p>#}
+    {#                                <p>6 hrs. ago</p>#}
+    {#                            </div>#}
+    {#                        </a>#}
+    {#                    </li>#}
+    {#                    <li><hr class="dropdown-divider"></li>#}
+    {#                    <li class="dropdown-footer">#}
+    {#                        <a href="#">Show all messages</a>#}
+    {#                    </li>#}
+    {#                </ul>#}
+    {#            </li>#}
+
+                {# User dropdown menu #}
+                <li class="nav-item dropdown pe-3">
+                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                        <img src="{{ asset('build/images/placeholder-profile.png') }}" alt="" class="rounded-circle">
+                        <span class="d-none d-md-block dropdown-toggle ps-2">{{ app.user.username }}</span>
+                    </a>
+
+                    <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+                        <li class="dropdown-header">
+                            <h6>{{ app.user.username }}</h6>
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <span>Admin</span>
+                            {% else %}
+                                <span>Gestionnaire</span>
+                            {% endif %}
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+
+                        {# User profile #}
+    {#                    <li>#}
+    {#                        <a class="dropdown-item d-flex align-items-center" href="users-profile.html">#}
+    {#                            <i class="ri-user-line"></i>#}
+    {#                            <span>My Profile</span>#}
+    {#                        </a>#}
+    {#                    </li>#}
+    {#                    <li><hr class="dropdown-divider"></li>#}
+
+                        {# User account settings #}
+    {#                    <li>#}
+    {#                        <a class="dropdown-item d-flex align-items-center" href="users-profile.html">#}
+    {#                            <i class="ri-settings-5-line"></i>#}
+    {#                            <span>Account Settings</span>#}
+    {#                        </a>#}
+    {#                    </li>#}
+    {#                    <li><hr class="dropdown-divider"></li>#}
+
+                        <li>
+                            <a class="dropdown-item d-flex align-items-center" href="{{ url('app_logout') }}">
+                                <i class="ri-logout-box-r-line"></i>
+                                <span>Me déconnecter</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    {# Left sidebar #}
+    <aside id="sidebar" class="sidebar">
+        <ul class="sidebar-nav" id="sidebar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="/">
+                    <i class="ri-dashboard-line"></i>
+                    <span>Accueil</span>
+                </a>
+            </li>
+            {% if is_granted('ROLE_ADMIN') %}
+                <li class="nav-heading">Administration</li>
+                <li class="nav-item">
+                    <a class="nav-link collapsed" href="{{ url('admin_dashboard') }}">
+                        <i class="ri-tools-fill"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </li>
+            {% endif %}
+        </ul>
+    </aside>
+
+    <main id="main" class="main">
+        {% block breadcrumb %}
+            <div class="pagetitle">
+                <h1>Accueil</h1>
+                <nav>
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item active">Accueil</li>
+                    </ol>
+                </nav>
+            </div>
+        {% endblock %}
+        <div id="full-height-page-body">
+            {% block body %}{% endblock %}
+        </div>
+    </main>
+
+    {# Footer #}
+    <footer id="footer" class="footer">
+        <div class="copyright">
+            Thème : <a href="https://bootstrapmade.com" class="fw-bold"><span>NiceAdmin</span></a>
+        </div>
+        <div class="credits">
+            Logiciel réalisé par LUCILE DECROZANT-TRIQUENAUX EIRL<br>
+
+            Sous
+            <a href="https://www.gnu.org/licenses/agpl-3.0" target="_blank">
+                <i class="ri-links-line"></i> licence AGPL v3
+            </a><br>
+
+            <a href="https://github.com/LUCILE-DECROZANT-TRIQUENAUX-EIRL/structura-2" target="_blank">
+                <i class="ri-links-line"></i> Voir le code source
+            </a>
+        </div>
+    </footer>
+
+    <a
+            href="#"
+            class="back-to-top d-flex align-items-center justify-content-center"
+            title="Revenir en haut"
+            data-bs-toggle="tooltip"
+    >
+        <i class="ri-arrow-up-line"></i>
+    </a>
+</body>
 </html>
