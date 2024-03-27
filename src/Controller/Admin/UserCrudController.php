@@ -4,10 +4,11 @@ namespace App\Controller\Admin;
 
 use App\Entity\User;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Action, Actions, Crud, KeyValueStore};
+use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
-use EasyCorp\Bundle\EasyAdminBundle\Field\{ArrayField, IdField, TextField};
+use EasyCorp\Bundle\EasyAdminBundle\Field\{ArrayField, DateTimeField, IdField, TextField};
 use Symfony\Component\Form\Extension\Core\Type\{PasswordType, RepeatedType};
 use Symfony\Component\Form\{FormBuilderInterface, FormEvents};
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -15,7 +16,8 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 class UserCrudController extends AbstractCrudController
 {
     public function __construct(
-        public UserPasswordHasherInterface $userPasswordHasher
+        private UserPasswordHasherInterface $userPasswordHasher,
+        private EntityManagerInterface $entityManager
     ) {}
 
     public static function getEntityFqcn(): string
@@ -25,11 +27,35 @@ class UserCrudController extends AbstractCrudController
 
     public function configureActions(Actions $actions): Actions
     {
+        // disable the softdeletable filter to show deleted users
+        $this->entityManager->getFilters()->disable('softdeleteable');
+
+        // remove delete actions if the user is already deleted
+        $deleteFromIndexAction = parent::configureActions($actions)
+            ->getAsDto(Crud::PAGE_INDEX)
+            ->getAction(Crud::PAGE_INDEX, Action::DELETE);
+        if (!is_null($deleteFromIndexAction)) {
+            $deleteFromIndexAction->setDisplayCallable(function (User $user) {
+                return empty($user->getDeletedAt());
+            });
+        }
+        $deleteFromDetailAction = parent::configureActions($actions)
+            ->getAsDto(Crud::PAGE_DETAIL)
+            ->getAction(Crud::PAGE_DETAIL, Action::DELETE);
+        if (!is_null($deleteFromDetailAction)) {
+            $deleteFromDetailAction->setDisplayCallable(function (User $user) {
+                return empty($user->getDeletedAt());
+            });
+        }
+
+        // add actions to menus
         return $actions
-            ->add(Crud::PAGE_EDIT, Action::INDEX)
+            // user listing
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
-            ->add(Crud::PAGE_EDIT, Action::DETAIL)
-            ;
+            // user edition page
+            ->add(Crud::PAGE_EDIT, Action::INDEX)
+            ->add(Crud::PAGE_EDIT, Action::DELETE)
+        ;
     }
 
     public function configureFields(string $pageName): iterable
@@ -38,6 +64,7 @@ class UserCrudController extends AbstractCrudController
             IdField::new('id')->hideOnForm(),
             TextField::new('username'),
             ArrayField::new('roles'),
+            DateTimeField::new('deleted_at')->hideOnForm(),
         ];
 
         $password = TextField::new('password')
