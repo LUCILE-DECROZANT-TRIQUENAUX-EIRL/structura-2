@@ -1,0 +1,18 @@
+{# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
+{# @var field \EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto #}
+{# @var entity \EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto #}
+{% if ea.crud.currentAction == 'detail' %}
+    <span title="{{ field.value }}">{{ field.formattedValue|raw|nl2br }}</span>
+{% elseif ea.crud.currentAction == 'index' %}
+    {# visually show the field is from a deleted entity #}
+    <span
+            title="{{ field.value }}"
+            class="{{ isDeletedEntity(entity) ? 'text-decoration-line-through text-danger' }}"
+    >
+        {{ field.formattedValue|raw }}
+    </span>
+{% else %}
+    <span title="{{ field.value }}">
+        {{ field.formattedValue|raw }}
+    </span>
+{% endif %}

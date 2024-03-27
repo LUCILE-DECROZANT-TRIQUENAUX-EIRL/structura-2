@@ -1,0 +1,17 @@
+{# @var ea \EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext #}
+{# @var field \EasyCorp\Bundle\EasyAdminBundle\Dto\FieldDto #}
+{# @var entity \EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto #}
+{# this template is used to display Doctrine entity primary keys #}
+{% if ea.crud.currentAction == 'detail' %}
+    {% if isDeletedEntity(entity) %}
+        <span class="badge rounded-pill bg-info">Deleted</span>
+    {% endif %}
+    {{ field.formattedValue }}
+{% elseif ea.crud.currentAction == 'index' %}
+    {# visually show the field is from a deleted entity #}
+    <span class="{{ isDeletedEntity(entity) ? 'text-decoration-line-through text-danger' }}">
+        {{ field.formattedValue }}
+    </span>
+{% else %}
+    {{ field.formattedValue }}
+{% endif %}
