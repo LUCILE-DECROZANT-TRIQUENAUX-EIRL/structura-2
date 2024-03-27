@@ -2,7 +2,45 @@
 {% extends '@EasyAdmin/layout.html.twig' %}
 
 {% block main %}
-    <div style="padding: 1rem; background-color: #a5d6ff; color: #25679D">
-        On pourra mettre ici l'historique des activités des utilisateurices.
+    <div class="alert alert-secondary mb-3">
+        Retrouvez ci-dessous l'historique des activités des utilisateurices.
     </div>
+    <table class="table table-sm table-hover w-100">
+        <thead>
+        <tr>
+            <th>Entité modifiée</th>
+            <th>#</th>
+            <th>Origine de<br>la modification</th>
+            <th>Type de modification</th>
+            <th>Date</th>
+            <th>Modification</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for logActivity in logActivities %}
+            <tr>
+                <td><code>{{ logActivity.getModelName() }}</code></td>
+                <td><code>{{ logActivity.getObjectId() }}</code></td>
+                <td>
+                    {% if logActivity.getUsername() is not empty %}
+                        <code>{{ logActivity.getUsername() }}</code>
+                    {% else %}
+                        <span class="text-muted fst-italic">System</span>
+                    {% endif %}
+                </td>
+                <td>{{ logActivity.getAction() }}</td>
+                <td>{{ logActivity.getLoggedAt() | format_datetime(locale='fr') }}</td>
+                <td>
+                    {% for column, data in logActivity.getDataAsArray %}
+                        <div>
+                            <code>{{ column }}</code>
+                            =>
+                            <span class="font-monospace">{{ dump(data) }}</span>
+                        </div>
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
 {% endblock main %}

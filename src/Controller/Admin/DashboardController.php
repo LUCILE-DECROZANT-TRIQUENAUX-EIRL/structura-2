@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\User;
+use App\Repository\LogActivityRepository;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
@@ -11,10 +12,18 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class DashboardController extends AbstractDashboardController
 {
+    private LogActivityRepository $logActivityRepository;
+
+    public function __construct(LogActivityRepository $logActivityRepository)
+    {
+        $this->logActivityRepository = $logActivityRepository;
+    }
+
     #[Route('/admin', name: 'admin_dashboard')]
     public function index(): Response
     {
-        return $this->render('admin/dashboard.html.twig');
+        $logActivities = $this->logActivityRepository->findAll();
+        return $this->render('admin/dashboard.html.twig', ['logActivities' => $logActivities]);
     }
 
     public function configureDashboard(): Dashboard
