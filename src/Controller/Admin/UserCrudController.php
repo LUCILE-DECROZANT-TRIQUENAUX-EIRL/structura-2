@@ -31,12 +31,28 @@ class UserCrudController extends AbstractCrudController
         // disable the softdeletable filter to show deleted users
         $this->entityManager->getFilters()->disable('softdeleteable');
 
-        // remove delete actions if the user is already deleted
+        // remove actions if the user is deleted
+        $editFromIndexAction = parent::configureActions($actions)
+            ->getAsDto(Crud::PAGE_INDEX)
+            ->getAction(Crud::PAGE_INDEX, Action::EDIT);
+        if (!is_null($editFromIndexAction)) {
+            $editFromIndexAction->setDisplayCallable(function (User $user) {
+                return empty($user->getDeletedAt());
+            });
+        }
         $deleteFromIndexAction = parent::configureActions($actions)
             ->getAsDto(Crud::PAGE_INDEX)
             ->getAction(Crud::PAGE_INDEX, Action::DELETE);
         if (!is_null($deleteFromIndexAction)) {
             $deleteFromIndexAction->setDisplayCallable(function (User $user) {
+                return empty($user->getDeletedAt());
+            });
+        }
+        $editFromDetailAction = parent::configureActions($actions)
+            ->getAsDto(Crud::PAGE_DETAIL)
+            ->getAction(Crud::PAGE_DETAIL, Action::EDIT);
+        if (!is_null($editFromDetailAction)) {
+            $editFromDetailAction->setDisplayCallable(function (User $user) {
                 return empty($user->getDeletedAt());
             });
         }
