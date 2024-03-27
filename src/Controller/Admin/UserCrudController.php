@@ -48,6 +48,14 @@ class UserCrudController extends AbstractCrudController
                 return empty($user->getDeletedAt());
             });
         }
+        $deleteFromEditAction = Action::new('delete', 'Delete')
+            ->displayIf(static function (User $user) {
+                return empty($user->getDeletedAt());
+            })
+            ->linkToCrudAction(Action::DELETE)
+            ->addCssClass('text-danger')
+            ->setIcon('fa fa-trash-o')
+        ;
 
         // add actions to menus
         return $actions
@@ -55,7 +63,7 @@ class UserCrudController extends AbstractCrudController
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
             // user edition page
             ->add(Crud::PAGE_EDIT, Action::INDEX)
-            ->add(Crud::PAGE_EDIT, Action::DELETE)
+            ->add(Crud::PAGE_EDIT, $deleteFromEditAction)
         ;
     }
 
