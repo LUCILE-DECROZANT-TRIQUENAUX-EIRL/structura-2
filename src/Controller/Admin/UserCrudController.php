@@ -3,12 +3,13 @@
 namespace App\Controller\Admin;
 
 use App\Entity\User;
-use EasyCorp\Bundle\EasyAdminBundle\Config\{Action, Actions, Crud, KeyValueStore};
+use EasyCorp\Bundle\EasyAdminBundle\Config\{Action, Actions, Crud, Filters, KeyValueStore};
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Context\AdminContext;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Dto\EntityDto;
 use EasyCorp\Bundle\EasyAdminBundle\Field\{ArrayField, DateTimeField, IdField, TextField};
+use EasyCorp\Bundle\EasyAdminBundle\Filter\NullFilter;
 use Symfony\Component\Form\Extension\Core\Type\{PasswordType, RepeatedType};
 use Symfony\Component\Form\{FormBuilderInterface, FormEvents};
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -84,6 +85,16 @@ class UserCrudController extends AbstractCrudController
         $fields[] = $password;
 
         return $fields;
+    }
+
+    // Configure filters on user index view
+    public function configureFilters(Filters $filters): Filters
+    {
+        return $filters
+            ->add('username')
+            ->add(NullFilter::new('deletedAt', 'Statut de suppression')
+                ->setChoiceLabels('Actifves', 'Supprimé-es'))
+        ;
     }
 
     public function createNewFormBuilder(EntityDto $entityDto, KeyValueStore $formOptions, AdminContext $context): FormBuilderInterface
