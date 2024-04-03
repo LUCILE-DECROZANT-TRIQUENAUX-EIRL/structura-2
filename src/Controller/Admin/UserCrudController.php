@@ -12,6 +12,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\{ArrayField, DateTimeField, IdField, T
 use EasyCorp\Bundle\EasyAdminBundle\Filter\NullFilter;
 use Symfony\Component\Form\Extension\Core\Type\{PasswordType, RepeatedType};
 use Symfony\Component\Form\{FormBuilderInterface, FormEvents};
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class UserCrudController extends AbstractCrudController
@@ -32,54 +33,68 @@ class UserCrudController extends AbstractCrudController
         $this->entityManager->getFilters()->disable('softdeleteable');
 
         // remove actions if the user is deleted
-        $editFromIndexAction = parent::configureActions($actions)
-            ->getAsDto(Crud::PAGE_INDEX)
-            ->getAction(Crud::PAGE_INDEX, Action::EDIT);
-        if (!is_null($editFromIndexAction)) {
-            $editFromIndexAction->setDisplayCallable(function (User $user) {
-                return empty($user->getDeletedAt());
+        $displayIfIsNotDeletedFunction = function (Action $action) {
+            $action->displayIf(static function (User $user) {
+                return !$user->isDeleted();
             });
-        }
-        $deleteFromIndexAction = parent::configureActions($actions)
-            ->getAsDto(Crud::PAGE_INDEX)
-            ->getAction(Crud::PAGE_INDEX, Action::DELETE);
-        if (!is_null($deleteFromIndexAction)) {
-            $deleteFromIndexAction->setDisplayCallable(function (User $user) {
-                return empty($user->getDeletedAt());
-            });
-        }
-        $editFromDetailAction = parent::configureActions($actions)
-            ->getAsDto(Crud::PAGE_DETAIL)
-            ->getAction(Crud::PAGE_DETAIL, Action::EDIT);
-        if (!is_null($editFromDetailAction)) {
-            $editFromDetailAction->setDisplayCallable(function (User $user) {
-                return empty($user->getDeletedAt());
-            });
-        }
-        $deleteFromDetailAction = parent::configureActions($actions)
-            ->getAsDto(Crud::PAGE_DETAIL)
-            ->getAction(Crud::PAGE_DETAIL, Action::DELETE);
-        if (!is_null($deleteFromDetailAction)) {
-            $deleteFromDetailAction->setDisplayCallable(function (User $user) {
-                return empty($user->getDeletedAt());
-            });
-        }
-        $deleteFromEditAction = Action::new('delete', 'Delete')
+            return $action;
+        };
+
+        // define custom actions
+        $restoreUser = Action::new('restore', 'Restore', 'fas fa-trash-restore-alt me-1 text-info')
+            ->linkToCrudAction('restoreUser')
+            ->addCssClass('text-info')
             ->displayIf(static function (User $user) {
-                return empty($user->getDeletedAt());
+                return $user->isDeleted();
             })
-            ->linkToCrudAction(Action::DELETE)
+        ;
+        $deleteUser = Action::new('delete', 'Delete')
+            ->linkToCrudAction('delete')
             ->addCssClass('text-danger')
-            ->setIcon('fa fa-trash-o')
+            ->displayIf(static function (User $user) {
+                return !$user->isDeleted();
+            })
         ;
 
         // add actions to menus
         return $actions
             // user listing
             ->add(Crud::PAGE_INDEX, Action::DETAIL)
+            ->add(Crud::PAGE_INDEX, $restoreUser)
+            ->update(Crud::PAGE_INDEX, Action::EDIT, $displayIfIsNotDeletedFunction)
+            ->update(Crud::PAGE_INDEX, Action::DELETE, $displayIfIsNotDeletedFunction)
+            ->reorder(Crud::PAGE_INDEX, [
+                Action::DETAIL,
+                Action::EDIT,
+                Action::DELETE,
+                $restoreUser->getAsDto()->getName(),
+            ])
+            // user creation page
+            ->add(Crud::PAGE_NEW, Action::INDEX)
+            ->reorder(Crud::PAGE_NEW, [
+                Action::INDEX,
+                Action::SAVE_AND_ADD_ANOTHER,
+                Action::SAVE_AND_RETURN,
+            ])
             // user edition page
             ->add(Crud::PAGE_EDIT, Action::INDEX)
-            ->add(Crud::PAGE_EDIT, $deleteFromEditAction)
+            ->add(Crud::PAGE_EDIT, $deleteUser)
+            ->reorder(Crud::PAGE_EDIT, [
+                Action::INDEX,
+                $deleteUser->getAsDto()->getName(),
+                Action::SAVE_AND_CONTINUE,
+                Action::SAVE_AND_RETURN,
+            ])
+            // user details page
+            ->add(Crud::PAGE_DETAIL, $restoreUser)
+            ->update(Crud::PAGE_DETAIL, Action::EDIT, $displayIfIsNotDeletedFunction)
+            ->update(Crud::PAGE_DETAIL, Action::DELETE, $displayIfIsNotDeletedFunction)
+            ->reorder(Crud::PAGE_DETAIL, [
+                Action::INDEX,
+                $restoreUser->getAsDto()->getName(),
+                Action::EDIT,
+                Action::DELETE,
+            ])
         ;
     }
 
@@ -131,6 +146,23 @@ class UserCrudController extends AbstractCrudController
     {
         $formBuilder = parent::createEditFormBuilder($entityDto, $formOptions, $context);
         return $this->addPasswordEventListener($formBuilder);
+    }
+
+    /**
+     * Restore a deleted user
+     *
+     * @param AdminContext $context
+     * @return RedirectResponse redirect to the entity index
+     */
+    public function restoreUser(AdminContext $context)
+    {
+        /** @var $user User */
+        $user = $context->getEntity()->getInstance();
+        $user->setDeletedAt(null);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        return $this->redirect('admin?crudAction=' . Crud::PAGE_INDEX . '&crudControllerFqcn=' . get_class($this));
     }
 
     private function addPasswordEventListener(FormBuilderInterface $formBuilder): FormBuilderInterface
