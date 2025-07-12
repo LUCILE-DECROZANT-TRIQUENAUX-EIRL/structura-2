@@ -1,0 +1,46 @@
+name: Build front and back end sources
+
+on:
+  push:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  frontBuild:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Cache Composer dependencies #Usefull for not downloading dependencies everytime this workflow runs
+      uses: actions/cache@v3
+      with:
+        path: /tmp/composer-cache
+        key: ${{ runner.os }}-${{ hashFiles('**/composer.lock') }}
+        
+    - name: Composer Installation 
+      uses: php-actions/composer@v6
+      with: 
+        php_version: "8.1.2"
+        #php_extensions: "" #php dependencies are to be added later
+    
+    - name: Checkout
+      uses: actions/checkout@v4 # This action checks-out your repository under $GITHUB_WORKSPACE, so your workflow can access it.
+
+    - name: Validate composer.json and composer.lock
+      run: composer validate --strict
+
+    - name: Backend build with Composer
+      run: composer install
+
+    - name: npm install for Frontend build
+      run: npm install
+
+    - name: Frontend build with npm # And maybe Yarn Encore who knows ?
+      run: npm run build
+
+    - name: Remove node_modules folder
+      run: rm -R node_modules
+      
+
